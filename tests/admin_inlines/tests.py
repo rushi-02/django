@@ -1117,15 +1117,16 @@ class SeleniumTests(AdminSeleniumTestCase):
         # There's only one inline to start with and it has the correct ID.
         self.assertEqual(len(self.selenium.find_elements(By.CSS_SELECTOR, '.dynamic-profile_set')), 1)
         self.assertEqual(
-            self.selenium.find_elements(
-                By.CSS_SELECTOR,
-                '.dynamic-profile_set'
-            )[0].get_attribute('id'),
+            self.selenium.find_elements(By.CSS_SELECTOR, '.dynamic-profile_set')[0].get_attribute('id'),
             'profile_set-0'
         )
         self.assertEqual(
-            len(self.selenium.find_elements(By.CSS_SELECTOR,
-                '.dynamic-profile_set#profile_set-0 input[name=profile_set-0-first_name]')),
+            len(
+                self.selenium.find_elements(
+                    By.CSS_SELECTOR,
+                    '.dynamic-profile_set#profile_set-0 input[name=profile_set-0-first_name]'
+                )
+            ),
             1
         )
         self.assertEqual(len(self.selenium.find_elements(

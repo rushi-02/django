@@ -1117,7 +1117,8 @@ class HorizontalVerticalFilterSeleniumTests(AdminWidgetSeleniumTestCase):
         ])
 
         # Check the tooltip is still there after moving: ticket #20821
-        to_lisa_select_option = self.selenium.find_element(By.CSS_SELECTOR,
+        to_lisa_select_option = self.selenium.find_element(
+            By.CSS_SELECTOR,
             '{} > option[value="{}"]'.format(to_box, self.lisa.id)
         )
         self.assertEqual(to_lisa_select_option.get_attribute('title'), to_lisa_select_option.get_attribute('text'))
