@@ -2,6 +2,8 @@ import gettext
 import json
 from os import path
 
+from selenium.webdriver.common.by import By
+
 from django.conf import settings
 from django.test import (
     RequestFactory, SimpleTestCase, TestCase, modify_settings,
@@ -440,21 +442,21 @@ class I18nSeleniumTests(SeleniumTestCase):
     def test_javascript_gettext(self):
         self.selenium.get(self.live_server_url + '/jsi18n_template/')
 
-        elem = self.selenium.find_element_by_id("gettext")
+        elem = self.selenium.find_element(By.ID, "gettext")
         self.assertEqual(elem.text, "Entfernen")
-        elem = self.selenium.find_element_by_id("ngettext_sing")
+        elem = self.selenium.find_element(By.ID, "ngettext_sing")
         self.assertEqual(elem.text, "1 Element")
-        elem = self.selenium.find_element_by_id("ngettext_plur")
+        elem = self.selenium.find_element(By.ID, "ngettext_plur")
         self.assertEqual(elem.text, "455 Elemente")
-        elem = self.selenium.find_element_by_id("ngettext_onnonplural")
+        elem = self.selenium.find_element(By.ID, "ngettext_onnonplural")
         self.assertEqual(elem.text, "Bild")
-        elem = self.selenium.find_element_by_id("pgettext")
+        elem = self.selenium.find_element(By.ID, "pgettext")
         self.assertEqual(elem.text, "Kann")
-        elem = self.selenium.find_element_by_id("npgettext_sing")
+        elem = self.selenium.find_element(By.ID, "npgettext_sing")
         self.assertEqual(elem.text, "1 Resultat")
-        elem = self.selenium.find_element_by_id("npgettext_plur")
+        elem = self.selenium.find_element(By.ID, "npgettext_plur")
         self.assertEqual(elem.text, "455 Resultate")
-        elem = self.selenium.find_element_by_id("formats")
+        elem = self.selenium.find_element(By.ID, "formats")
         self.assertEqual(
             elem.text,
             "DATE_INPUT_FORMATS is an object; DECIMAL_SEPARATOR is a string; FIRST_DAY_OF_WEEK is a number;"
@@ -465,7 +467,7 @@ class I18nSeleniumTests(SeleniumTestCase):
     def test_multiple_catalogs(self):
         self.selenium.get(self.live_server_url + '/jsi18n_multi_catalogs/')
 
-        elem = self.selenium.find_element_by_id('app1string')
+        elem = self.selenium.find_element(By.ID, 'app1string')
         self.assertEqual(elem.text, 'il faut traduire cette chaîne de caractères de app1')
-        elem = self.selenium.find_element_by_id('app2string')
+        elem = self.selenium.find_element(By.ID, 'app2string')
         self.assertEqual(elem.text, 'il faut traduire cette chaîne de caractères de app2')

@@ -1,5 +1,7 @@
 import datetime
 
+from selenium.webdriver.common.by import By
+
 from django.contrib import admin
 from django.contrib.admin.models import LogEntry
 from django.contrib.admin.options import IncorrectLookupParameters
@@ -1418,17 +1420,20 @@ class SeleniumTests(AdminSeleniumTestCase):
         form_id = '#changelist-form'
 
         # Test amount of rows in the Changelist
-        rows = self.selenium.find_elements_by_css_selector(
+        rows = self.selenium.find_elements(
+            By.CSS_SELECTOR,
             '%s #result_list tbody tr' % form_id
         )
         self.assertEqual(len(rows), 1)
         row = rows[0]
 
-        selection_indicator = self.selenium.find_element_by_css_selector(
+        selection_indicator = self.selenium.find_element(
+            By.CSS_SELECTOR,
             '%s .action-counter' % form_id
         )
-        all_selector = self.selenium.find_element_by_id('action-toggle')
-        row_selector = self.selenium.find_element_by_css_selector(
+        all_selector = self.selenium.find_element(By.ID, 'action-toggle')
+        row_selector = self.selenium.find_element(
+            By.CSS_SELECTOR,
             '%s #result_list tbody tr:first-child .action-select' % form_id
         )
 
@@ -1460,7 +1465,7 @@ class SeleniumTests(AdminSeleniumTestCase):
         Parent.objects.bulk_create([Parent(name='parent%d' % i) for i in range(5)])
         self.admin_login(username='super', password='secret')
         self.selenium.get(self.live_server_url + reverse('admin:admin_changelist_parent_changelist'))
-        checkboxes = self.selenium.find_elements_by_css_selector('tr input.action-select')
+        checkboxes = self.selenium.find_elements(By.CSS_SELECTOR, 'tr input.action-select')
         self.assertEqual(len(checkboxes), 5)
         for c in checkboxes:
             self.assertIs(c.get_property('checked'), False)
@@ -1476,12 +1481,12 @@ class SeleniumTests(AdminSeleniumTestCase):
         self.admin_login(username='super', password='secret')
         self.selenium.get(self.live_server_url + reverse('admin:admin_changelist_parent_changelist'))
 
-        selection_indicator = self.selenium.find_element_by_css_selector('.action-counter')
-        select_all_indicator = self.selenium.find_element_by_css_selector('.actions .all')
-        question = self.selenium.find_element_by_css_selector('.actions > .question')
-        clear = self.selenium.find_element_by_css_selector('.actions > .clear')
-        select_all = self.selenium.find_element_by_id('action-toggle')
-        select_across = self.selenium.find_element_by_name('select_across')
+        selection_indicator = self.selenium.find_element(By.CSS_SELECTOR, '.action-counter')
+        select_all_indicator = self.selenium.find_element(By.CSS_SELECTOR, '.actions .all')
+        question = self.selenium.find_element(By.CSS_SELECTOR, '.actions > .question')
+        clear = self.selenium.find_element(By.CSS_SELECTOR, '.actions > .clear')
+        select_all = self.selenium.find_element(By.ID, 'action-toggle')
+        select_across = self.selenium.find_element(By.NAME, 'select_across')
 
         self.assertIs(question.is_displayed(), False)
         self.assertIs(clear.is_displayed(), False)
@@ -1523,11 +1528,11 @@ class SeleniumTests(AdminSeleniumTestCase):
         self.admin_login(username='super', password='secret')
         self.selenium.get(self.live_server_url + reverse('admin:admin_changelist_parent_changelist'))
 
-        name_input = self.selenium.find_element_by_id('id_form-0-name')
+        name_input = self.selenium.find_element(By.ID, 'id_form-0-name')
         name_input.clear()
         name_input.send_keys('bar')
-        self.selenium.find_element_by_id('action-toggle').click()
-        self.selenium.find_element_by_name('index').click()  # Go
+        self.selenium.find_element(By.ID, 'action-toggle').click()
+        self.selenium.find_element(By.NAME, 'index').click()  # Go
         alert = self.selenium.switch_to.alert
         try:
             self.assertEqual(
@@ -1546,13 +1551,13 @@ class SeleniumTests(AdminSeleniumTestCase):
         self.admin_login(username='super', password='secret')
         self.selenium.get(self.live_server_url + reverse('admin:admin_changelist_parent_changelist'))
 
-        name_input = self.selenium.find_element_by_id('id_form-0-name')
+        name_input = self.selenium.find_element(By.ID, 'id_form-0-name')
         name_input.clear()
         name_input.send_keys('other name')
         Select(
-            self.selenium.find_element_by_name('action')
+            self.selenium.find_element(By.NAME, 'action')
         ).select_by_value('delete_selected')
-        self.selenium.find_element_by_name('_save').click()
+        self.selenium.find_element(By.NAME, '_save').click()
         alert = self.selenium.switch_to.alert
         try:
             self.assertEqual(
@@ -1573,9 +1578,9 @@ class SeleniumTests(AdminSeleniumTestCase):
         self.selenium.get(self.live_server_url + reverse('admin:admin_changelist_parent_changelist'))
 
         Select(
-            self.selenium.find_element_by_name('action')
+            self.selenium.find_element(By.NAME, 'action')
         ).select_by_value('delete_selected')
-        self.selenium.find_element_by_name('_save').click()
+        self.selenium.find_element(By.NAME, '_save').click()
         alert = self.selenium.switch_to.alert
         try:
             self.assertEqual(

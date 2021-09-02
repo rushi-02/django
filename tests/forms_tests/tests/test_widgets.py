@@ -1,3 +1,5 @@
+from selenium.webdriver.common.by import By
+
 from django.contrib.admin.tests import AdminSeleniumTestCase
 from django.test import override_settings
 from django.urls import reverse
@@ -16,6 +18,6 @@ class LiveWidgetTests(AdminSeleniumTestCase):
         """
         article = Article.objects.create(content="\nTst\n")
         self.selenium.get(self.live_server_url + reverse('article_form', args=[article.pk]))
-        self.selenium.find_element_by_id('submit').click()
+        self.selenium.find_element(By.ID, 'submit').click()
         article = Article.objects.get(pk=article.pk)
         self.assertEqual(article.content, "\r\nTst\r\n")

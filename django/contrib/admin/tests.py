@@ -1,5 +1,7 @@
 from contextlib import contextmanager
 
+from selenium.webdriver.common.by import By
+
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.test import modify_settings
 from django.test.selenium import SeleniumTestCase
@@ -117,7 +119,7 @@ class AdminSeleniumTestCase(SeleniumTestCase, StaticLiveServerTestCase):
         Block until a new page has loaded and is ready.
         """
         from selenium.webdriver.support import expected_conditions as ec
-        old_page = self.selenium.find_element_by_tag_name('html')
+        old_page = self.selenium.find_element(By.TAG_NAME, 'html')
         yield
         # Wait for the next page to be loaded
         self.wait_until(ec.staleness_of(old_page), timeout=timeout)
@@ -128,13 +130,13 @@ class AdminSeleniumTestCase(SeleniumTestCase, StaticLiveServerTestCase):
         Log in to the admin.
         """
         self.selenium.get('%s%s' % (self.live_server_url, login_url))
-        username_input = self.selenium.find_element_by_name('username')
+        username_input = self.selenium.find_element(By.NAME, 'username')
         username_input.send_keys(username)
-        password_input = self.selenium.find_element_by_name('password')
+        password_input = self.selenium.find_element(By.NAME, 'password')
         password_input.send_keys(password)
         login_text = _('Log in')
         with self.wait_page_loaded():
-            self.selenium.find_element_by_xpath('//input[@value="%s"]' % login_text).click()
+            self.selenium.find_element(By.XPATH, '//input[@value="%s"]' % login_text).click()
 
     def select_option(self, selector, value):
         """
@@ -142,7 +144,7 @@ class AdminSeleniumTestCase(SeleniumTestCase, StaticLiveServerTestCase):
         identified by the CSS selector `selector`.
         """
         from selenium.webdriver.support.ui import Select
-        select = Select(self.selenium.find_element_by_css_selector(selector))
+        select = Select(self.selenium.find_element(By.CSS_SELECTOR, selector))
         select.select_by_value(value)
 
     def deselect_option(self, selector, value):
@@ -151,12 +153,12 @@ class AdminSeleniumTestCase(SeleniumTestCase, StaticLiveServerTestCase):
         identified by the CSS selector `selector`.
         """
         from selenium.webdriver.support.ui import Select
-        select = Select(self.selenium.find_element_by_css_selector(selector))
+        select = Select(self.selenium.find_element(By.CSS_SELECTOR, selector))
         select.deselect_by_value(value)
 
     def _assertOptionsValues(self, options_selector, values):
         if values:
-            options = self.selenium.find_elements_by_css_selector(options_selector)
+            options = self.selenium.find_elements(By.CSS_SELECTOR, options_selector)
             actual_values = []
             for option in options:
                 actual_values.append(option.get_attribute('value'))
@@ -167,7 +169,7 @@ class AdminSeleniumTestCase(SeleniumTestCase, StaticLiveServerTestCase):
             # to be the case.
             with self.disable_implicit_wait():
                 self.wait_until(
-                    lambda driver: not driver.find_elements_by_css_selector(options_selector)
+                    lambda driver: not driver.find_elements(By.CSS_SELECTOR, options_selector)
                 )
 
     def assertSelectOptions(self, selector, values):
@@ -189,5 +191,7 @@ class AdminSeleniumTestCase(SeleniumTestCase, StaticLiveServerTestCase):
         Return True if the element identified by `selector` has the CSS class
         `klass`.
         """
-        return (self.selenium.find_element_by_css_selector(selector)
-                .get_attribute('class').find(klass) != -1)
+        return (
+            self.selenium.find_element(By.CSS_SELECTOR, selector)
+                .get_attribute('class').find(klass) != -1
+        )
