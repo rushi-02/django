@@ -19,11 +19,13 @@ practice to store data in UTC in your database. The main reason is daylight
 saving time (DST). Many countries have a system of DST, where clocks are moved
 forward in spring and backward in autumn. If you're working in local time,
 you're likely to encounter errors twice a year, when the transitions happen.
-(The pytz_ documentation discusses `these issues`_ in greater detail.) This
+(The pytz_ documentation discusses `these issues`_ in greater detail. -- https://www.python.org/dev/peps/pep-0495/#rationale) This
 probably doesn't matter for your blog, but it's a problem if you over-bill or
 under-bill your customers by one hour, twice a year, every year. The solution
 to this problem is to use UTC in the code and use local time only when
 interacting with end users.
+
+
 
 Time zone support is disabled by default. To enable it, set :setting:`USE_TZ =
 True <USE_TZ>` in your settings file.
@@ -32,6 +34,7 @@ True <USE_TZ>` in your settings file.
 
     In Django 5.0, time zone support will be enabled by default.
 
+REWRITE
 By default, time zone support uses pytz_, which is installed when you install
 Django; Django also supports the use of other time zone implementations like
 :mod:`zoneinfo` by passing :class:`~datetime.tzinfo` objects directly to
@@ -40,6 +43,11 @@ functions in :mod:`django.utils.timezone`.
 .. versionchanged:: 3.2
 
     Support for non-``pytz`` timezone implementations was added.
+
+.. versionchanged:: 4.0
+
+    ZoneInfo was made the default timezone implementation.
+
 
 .. note::
 
@@ -91,6 +99,7 @@ should be aware too. In this mode, the example above becomes::
 
 .. warning::
 
+    REVISE
     Dealing with aware datetime objects isn't always intuitive. For instance,
     the ``tzinfo`` argument of the standard datetime constructor doesn't work
     reliably for time zones with DST. Using UTC is generally safe; if you're
@@ -118,6 +127,7 @@ objects, in order to preserve backwards-compatibility. When the database layer
 receives one, it attempts to make it aware by interpreting it in the
 :ref:`default time zone <default-current-time-zone>` and raises a warning.
 
+REVISE
 Unfortunately, during DST transitions, some datetimes don't exist or are
 ambiguous. In such situations, pytz_ raises an exception. That's why you should
 always create aware datetime objects when time zone support is enabled.
@@ -169,7 +179,7 @@ selection logic that makes sense for you.
 
 Most websites that care about time zones ask users in which time zone they live
 and store this information in the user's profile. For anonymous users, they use
-the time zone of their primary audience or UTC. pytz_ provides helpers_, like a
+the time zone of their primary audience or UTC. REVISE pytz_ provides helpers_, like a
 list of time zones per country, that you can use to pre-select the most likely
 choices.
 
@@ -178,6 +188,7 @@ error handling entirely for the sake of simplicity.)
 
 Add the following middleware to :setting:`MIDDLEWARE`::
 
+    REWRITE
     import pytz
 
     from django.utils import timezone
@@ -231,6 +242,7 @@ When you enable time zone support, Django interprets datetimes entered in
 forms in the :ref:`current time zone <default-current-time-zone>` and returns
 aware datetime objects in ``cleaned_data``.
 
+REVIEW
 If the current time zone raises an exception for datetimes that don't exist or
 are ambiguous because they fall in a DST transition (the timezones provided by
 pytz_ do this), such datetimes will be reported as invalid values.
@@ -380,6 +392,8 @@ For example::
 
 Migration guide
 ===============
+
+EXTRA SECTION HERE FOR MOVE TO ZONEINFO?
 
 Here's how to migrate a project that was started before Django supported time
 zones.
@@ -589,7 +603,7 @@ Troubleshooting
    None of this is true in a time zone aware environment::
 
        >>> import datetime
-       >>> import pytz
+REVIEW >>> import pytz
        >>> paris_tz = pytz.timezone("Europe/Paris")
        >>> new_york_tz = pytz.timezone("America/New_York")
        >>> paris = paris_tz.localize(datetime.datetime(2012, 3, 3, 1, 30))
@@ -627,7 +641,7 @@ Troubleshooting
    will be the current timezone::
 
        >>> from django.utils import timezone
-       >>> timezone.activate(pytz.timezone("Asia/Singapore"))
+REVIEW >>> timezone.activate(pytz.timezone("Asia/Singapore"))
        # For this example, we set the time zone to Singapore, but here's how
        # you would obtain the current time zone in the general case.
        >>> current_tz = timezone.get_current_timezone()
@@ -651,7 +665,7 @@ Usage
    ``"Europe/Helsinki"`` **time zone. How do I turn that into an aware
    datetime?**
 
-   This is exactly what pytz_ is for.
+   This is exactly what pytz_ is for.           REVIEW
 
        >>> from django.utils.dateparse import parse_datetime
        >>> naive = parse_datetime("2012-02-21 10:28:45")
@@ -688,6 +702,8 @@ Usage
    In this example, the current time zone is ``"Europe/Paris"``.
 
 #. **How can I see all available time zones?**
+
+REVIEW
 
    pytz_ provides helpers_, including a list of current time zones and a list
    of all available time zones -- some of which are only of historical

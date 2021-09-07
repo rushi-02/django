@@ -975,11 +975,14 @@ The code for this test may look as follows::
 
         def test_login(self):
             self.selenium.get('%s%s' % (self.live_server_url, '/login/'))
-            username_input = self.selenium.find_element_by_name("username")
+            username_input = self.selenium.find_element(
+	By.NAME, "username")
             username_input.send_keys('myuser')
-            password_input = self.selenium.find_element_by_name("password")
+            password_input = self.selenium.find_element(
+	By.NAME, "password")
             password_input.send_keys('secret')
-            self.selenium.find_element_by_xpath('//input[@value="Log in"]').click()
+            self.selenium.find_element(
+	By.XPATH, '//input[@value="Log in"]').click()
 
 Finally, you may run the test as follows:
 
@@ -1017,10 +1020,12 @@ out the `full reference`_ for more details.
             from selenium.webdriver.support.wait import WebDriverWait
             timeout = 2
             ...
-            self.selenium.find_element_by_xpath('//input[@value="Log in"]').click()
+            self.selenium.find_element(
+	By.XPATH, '//input[@value="Log in"]').click()
             # Wait until the response is received
             WebDriverWait(self.selenium, timeout).until(
-                lambda driver: driver.find_element_by_tag_name('body'))
+                lambda driver: driver.find_element(
+	By.TAG_NAME, 'body'))
 
     The tricky thing here is that there's really no such thing as a "page load,"
     especially in modern web apps that generate HTML dynamically after the
